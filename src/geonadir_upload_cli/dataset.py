@@ -63,7 +63,7 @@ def create_dataset(payload_data, base_url, token):
     return dataset_id
 
 
-def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry, retry_interval, timeout):
+def upload_images(dataset_name, dataset_id, workspace_id, img_dir, base_url, token, max_retry, retry_interval, timeout):
     """
     Upload images from a directory to a dataset.
 
@@ -122,7 +122,8 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
             upload_time = end_time - start_time
             df = pd.DataFrame(
                 {
-                    "Project ID": dataset_id,
+                    "Workspace ID": workspace_id,
+                    "Dataset ID": dataset_id,
                     "Dataset Name": dataset_name,
                     "Image Name": file_path,
                     "Response Code": response_code,
@@ -144,6 +145,7 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
 def upload_images_from_collection(
         dataset_name,
         dataset_id,
+        workspace_id,
         collection,
         base_url,
         token,
@@ -221,7 +223,8 @@ def upload_images_from_collection(
             upload_time = end_time - start_time
             df = pd.DataFrame(
                 {
-                    "Project ID": dataset_id,
+                    "Workspace ID": workspace_id,
+                    "Dataset ID": dataset_id,
                     "Dataset Name": dataset_name,
                     "Image Name": file_path,
                     "Response Code": response_code,

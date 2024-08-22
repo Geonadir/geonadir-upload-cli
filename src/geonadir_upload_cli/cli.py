@@ -61,6 +61,7 @@ def cli():
 )
 @click.password_option(
     "--token", "-t",
+    required=True,
     help="User token for authentication.",
 )
 @click.option(
@@ -135,6 +136,12 @@ If flagged without specifing output folder, default is the current path of your 
     help="Existing Geonadir dataset id to be uploaded to. Only works when dataset id is valid. \
 Leave default or set 0 to skip dataset existence check and upload to new dataset insetad."
 )
+@click.option(
+    "--workspace-id", "-w",    
+    required=True,
+    type=click.IntRange(0, max_open=True),
+    help="Please enter the workspace you'd like to upload to"
+)
 def local_upload(**kwargs):
     """upload local images
     """
@@ -157,7 +164,8 @@ def local_upload(**kwargs):
     help="Base url of geonadir api.",
 )
 @click.password_option(
-    "--token", "-t",
+    "--token", "-t",    
+    required=True,
     help="User token for authentication.",
 )
 @click.option(
@@ -267,6 +275,12 @@ e.g. ... --item collection_title ./collection.json ...",
     help="Existing Geonadir dataset id to be uploaded to. Only works when dataset id is valid. \
 Leave default or set 0 to skip dataset existence check and upload to new dataset insetad."
 )
+@click.option(
+    "--workspace-id", "-w",
+    required=True,
+    type=click.IntRange(0, max_open=True),
+    help="Please enter the workspace you'd like to upload to"
+)
 def collection_upload(**kwargs):
     """upload dataset from valid STAC collection object
     """
@@ -290,6 +304,7 @@ def collection_upload(**kwargs):
 )
 @click.password_option(
     "--token", "-t",
+    required=True,
     help="User token for authentication.",
 )
 @click.option(
@@ -399,6 +414,12 @@ If flagged without specifing output folder, default is the current path of your 
     type=click.FloatRange(0, max_open=True),
     required=False,
     help="Retry interval second for uploading single image.",
+)
+@click.option(
+    "--workspace-id", "-w",
+    required=True,
+    type=click.IntRange(0, max_open=True),
+    help="Please enter the workspace you'd like to upload to"
 )
 def catalog_upload(**kwargs):
     """upload dataset from valid STAC catalog object
