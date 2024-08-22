@@ -357,7 +357,7 @@ Options:
 An example of privately uploading `./testimage` as dataset **test1** and `C:\tmp\testimage` as **test2** with metadata file in `./sample_metadata.json` (see next section), generating the output csv files in the current folder, and trigger the orthomosaic process when uploading is finished:
 
 ```bash
-geonadir-cli local-upload -i test1 testimage -i test2 C:\tmp\testimage -p -m sample_metadata.json -o
+geonadir-cli local-upload -i test1 testimage -i test2 C:\tmp\testimage -p -m sample_metadata.json -o -t ********* -w ****
 ```
 
 The metadata specified in the json file will override the global settings, e.g. `is_private`.  
