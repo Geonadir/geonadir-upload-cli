@@ -13,6 +13,7 @@ app/__pycache__
 build/
 .pytest_cache
 __version__.py
+*.csv
 
 # Node artifact files
 node_modules/
