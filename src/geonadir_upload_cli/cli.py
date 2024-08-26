@@ -519,9 +519,10 @@ def range_dataset(**kwargs):
     help="Whether output csv is created. Generate output at the specified path. Default is false. \
 If flagged without specifing output folder, default is the current path of your terminal.",
 )
-@click.password_option(
+@click.option(
     "--token", "-t",
-    required=True,
+    required=False,
+    default="",
     help="Token for authentication if user want to check the non-FAIRGeo dataset.",
 )
 @click.argument('project-id')

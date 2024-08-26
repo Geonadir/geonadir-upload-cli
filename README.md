@@ -519,6 +519,8 @@ PS C:\Users\uqtlan> geonadir-cli range-dataset -- 24 -34 29 -27
 
 Usage: `geonadir-cli get-dataset-info <DATASET_ID>`
 
+If the dataset is not available on FAIRGEO, user can provide a `-t <TOKEN>` to check metadata that they have access to.
+
 sample usage and output:
 
 ```bash
