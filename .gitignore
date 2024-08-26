@@ -14,6 +14,7 @@ build/
 .pytest_cache
 __version__.py
 *.csv
+tests/api_request_test.py
 
 # Node artifact files
 node_modules/

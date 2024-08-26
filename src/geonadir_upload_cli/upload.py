@@ -57,9 +57,11 @@ def normal_upload(**kwargs):
     dataset_id = kwargs.get("dataset_id")
     workspace_id = kwargs.get("workspace_id")
     existing_dataset_name = ""
+    token = "Token " + token
+    logger.debug(f"token: {token}")
     if dataset_id:
         logger.debug(f"searching for metadata of dataset {dataset_id}")
-        result = dataset_info(dataset_id, base_url)
+        result = dataset_info(dataset_id, base_url, token)
         if result == "Metadata not found":
             raise Exception(f"Dataset id {dataset_id} invalid.")
         logger.info(f"Upload to existing dataset id: {dataset_id}")
@@ -106,8 +108,7 @@ def normal_upload(**kwargs):
         return
 
     logger.info(base_url)
-    token = "Token " + token
-    logger.debug(f"token: {token}")
+
     if metadata_json:
         with open(metadata_json) as f:
             metadata = json.load(f)
@@ -183,9 +184,11 @@ def upload_from_collection(**kwargs):
     dataset_id = kwargs.get("dataset_id")
     workspace_id = kwargs.get("workspace_id")
     existing_dataset_name = ""
+    token = "Token " + token
+    logger.debug(f"token: {token}")
     if dataset_id:
         logger.debug(f"searching for metadata of dataset {dataset_id}")
-        result = dataset_info(dataset_id, base_url)
+        result = dataset_info(dataset_id, base_url, token)
         if result == "Metadata not found":
             raise Exception(f"Dataset id {dataset_id} invalid.")
         logger.info(f"Upload to existing dataset id: {dataset_id}")
@@ -272,7 +275,6 @@ def upload_from_collection(**kwargs):
         return
 
     logger.info(base_url)
-    token = "Token " + token
     if not dataset_id:
         if metadata_json:
             with open(metadata_json) as f:

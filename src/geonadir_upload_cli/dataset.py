@@ -347,7 +347,7 @@ def search_datasets(search_str, base_url):
     return response.json()
 
 
-def dataset_info(project_id, base_url):
+def dataset_info(project_id, base_url, token):
     """show dataset info of given id. return 'Metadata not found' if not found.
     sample output:
     {
@@ -400,6 +400,9 @@ def dataset_info(project_id, base_url):
     """
     logger.info(f"getting GN dataset info for {project_id}")
     logger.debug(f"url: {base_url}/api/metadata/")
+    headers = {
+        "Authorization": token
+    }
     payload = {
         "project_id": project_id
     }
@@ -407,6 +410,7 @@ def dataset_info(project_id, base_url):
 
     response = requests.get(
         f"{base_url}/api/metadata/",
+        headers=headers,
         params=payload,
         timeout=180,
     )

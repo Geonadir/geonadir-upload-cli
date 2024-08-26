@@ -519,6 +519,11 @@ def range_dataset(**kwargs):
     help="Whether output csv is created. Generate output at the specified path. Default is false. \
 If flagged without specifing output folder, default is the current path of your terminal.",
 )
+@click.password_option(
+    "--token", "-t",
+    required=True,
+    help="Token for authentication if user want to check the non-FAIRGeo dataset.",
+)
 @click.argument('project-id')
 def get_dataset_info(**kwargs):
     """get metadata of dataset given dataset id
@@ -526,7 +531,10 @@ def get_dataset_info(**kwargs):
     base_url = kwargs.get("base_url")
     project_id = kwargs.get("project_id")
     output = kwargs.get("output_folder", None)
-    result = dataset_info(project_id, base_url)
+    token = kwargs.get("token")
+    token = "Token " + token
+    logger.debug(f"token: {token}")
+    result = dataset_info(project_id, base_url, token)
     print(json.dumps(result, indent=4))
     if output:
         path = os.path.join(output, "data.json")
