@@ -15,6 +15,7 @@ requires-python = ">=3.8.0"  # >= 3.6.0
 license = {text = "MIT"}  # Apache 2.0 ?
 authors = [
     { name = "T Lan", email = "t.lan@uq.edu.au" },
+    { name = "Joan Li", email = "joan@geonadir.com" },
 ]
 keywords=[]
 dependencies = [
@@ -34,7 +35,7 @@ classifiers = [
 dynamic = ["version"]
 
 [project.urls]
-homepage = "https://github.com/ternaustralia/geonadir-upload-cli"
+homepage = "https://github.com/geonadir/geonadir-upload-cli"
 
 [project.scripts]
 geonadir-cli = "geonadir_upload_cli.cli:cli"

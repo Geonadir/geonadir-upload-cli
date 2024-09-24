@@ -56,7 +56,11 @@ Options:
 
 - `-t, --token`: The user token for authentication.
 
-  - When not specified in command, there will be a password prompt for it. (recommended for security’s sake)
+  - When not specified in command, the upload will not proceed.
+
+- `-w, --workspace-id`: The workspace that user would like the data to be uploaded to.
+
+  - When not specified in command, the upload will not proceed.
 
 - `-p, --private / --public`: Whether datasets are private.
 
@@ -148,7 +152,11 @@ Options:
 
 - `-t, --token`: The user token for authentication.
 
-  - When not specified in command, there will be a password prompt for it. (recommended for security’s sake)
+  - When not specified in command, the upload will not proceed.
+
+- `-w, --workspace-id`: The workspace that user would like the data to be uploaded to.
+
+  - When not specified in command, the upload will not proceed.
 
 - `-p, --private / --public`: Whether datasets are private.
 
@@ -259,7 +267,11 @@ Options:
 
 - `-t, --token`: The user token for authentication.
 
-  - When not specified in command, there will be a password prompt for it. (recommended for security’s sake)
+  - When not specified in command, the upload will not proceed.
+
+- `-w, --workspace-id`: The workspace that user would like the data to be uploaded to.
+
+  - When not specified in command, the upload will not proceed.
 
 - `-p, --private / --public`: Whether datasets are private.
 
@@ -345,7 +357,7 @@ Options:
 An example of privately uploading `./testimage` as dataset **test1** and `C:\tmp\testimage` as **test2** with metadata file in `./sample_metadata.json` (see next section), generating the output csv files in the current folder, and trigger the orthomosaic process when uploading is finished:
 
 ```bash
-geonadir-cli local-upload -i test1 testimage -i test2 C:\tmp\testimage -p -m sample_metadata.json -o
+geonadir-cli local-upload -i test1 testimage -i test2 C:\tmp\testimage -p -m sample_metadata.json -o -t ********* -w ****
 ```
 
 The metadata specified in the json file will override the global settings, e.g. `is_private`.  
@@ -506,6 +518,8 @@ PS C:\Users\uqtlan> geonadir-cli range-dataset -- 24 -34 29 -27
 ### getting dataset information
 
 Usage: `geonadir-cli get-dataset-info <DATASET_ID>`
+
+If the dataset is not available on FAIRGEO, user can provide a `-t <TOKEN>` to check metadata that they have access to.
 
 sample usage and output:
 

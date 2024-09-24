@@ -55,10 +55,13 @@ def normal_upload(**kwargs):
     retry_interval = kwargs.get("retry_interval")
     timeout = kwargs.get("timeout")
     dataset_id = kwargs.get("dataset_id")
+    workspace_id = kwargs.get("workspace_id")
     existing_dataset_name = ""
+    token = "Token " + token
+    logger.debug(f"token: {token}")
     if dataset_id:
         logger.debug(f"searching for metadata of dataset {dataset_id}")
-        result = dataset_info(dataset_id, base_url)
+        result = dataset_info(dataset_id, base_url, token)
         if result == "Metadata not found":
             raise Exception(f"Dataset id {dataset_id} invalid.")
         logger.info(f"Upload to existing dataset id: {dataset_id}")
@@ -79,6 +82,7 @@ def normal_upload(**kwargs):
         logger.info(f"max_retry: {max_retry} times")
         logger.info(f"retry_interval: {retry_interval} sec")
         logger.info(f"timeout: {timeout} sec")
+        logger.info(f"workspace: {workspace_id} sec")
         for count, i in enumerate(item):
             logger.info(f"--item {count + 1}:")
             dataset_name, image_location = i
@@ -104,8 +108,7 @@ def normal_upload(**kwargs):
         return
 
     logger.info(base_url)
-    token = "Token " + token
-    logger.debug(f"token: {token}")
+
     if metadata_json:
         with open(metadata_json) as f:
             metadata = json.load(f)
@@ -136,6 +139,7 @@ def normal_upload(**kwargs):
         dataset_details.append(
             (
                 dataset_id,
+                workspace_id,
                 dataset_name,
                 image_location,
                 base_url,
@@ -178,10 +182,13 @@ def upload_from_collection(**kwargs):
     retry_interval = kwargs.get("retry_interval")
     timeout = kwargs.get("timeout")
     dataset_id = kwargs.get("dataset_id")
+    workspace_id = kwargs.get("workspace_id")
     existing_dataset_name = ""
+    token = "Token " + token
+    logger.debug(f"token: {token}")
     if dataset_id:
         logger.debug(f"searching for metadata of dataset {dataset_id}")
-        result = dataset_info(dataset_id, base_url)
+        result = dataset_info(dataset_id, base_url, token)
         if result == "Metadata not found":
             raise Exception(f"Dataset id {dataset_id} invalid.")
         logger.info(f"Upload to existing dataset id: {dataset_id}")
@@ -207,6 +214,7 @@ def upload_from_collection(**kwargs):
         logger.info(f"max_retry: {max_retry} times")
         logger.info(f"retry_interval: {retry_interval} sec")
         logger.info(f"timeout: {timeout} sec")
+        logger.info(f"workspace: {workspace_id}")
         if exclude:
             logger.info(f"excluding keywords: {str(exclude)}")
         if include:
@@ -267,7 +275,6 @@ def upload_from_collection(**kwargs):
         return
 
     logger.info(base_url)
-    token = "Token " + token
     if not dataset_id:
         if metadata_json:
             with open(metadata_json) as f:
@@ -317,6 +324,7 @@ def upload_from_collection(**kwargs):
         dataset_details.append(
             (
                 dataset_id,
+                workspace_id,
                 dataset_name,
                 image_location,
                 base_url,
