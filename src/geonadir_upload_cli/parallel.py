@@ -21,6 +21,7 @@ logging.basicConfig(level=LOG_LEVEL)
 
 def process_thread(
     dataset_id,
+    workspace_id,
     dataset_name,
     img_dir,
     base_url,
@@ -74,7 +75,8 @@ def process_thread(
         payload_data = {
             "dataset_name": dataset_name,
             "is_private": private,
-            "is_published": True
+            "is_published": True,
+            "workspace": workspace_id
         }
 
         # retrieve metadata from STAC collection if applicable
@@ -141,6 +143,7 @@ def process_thread(
             result_df = upload_images_from_collection(
                 dataset_name,
                 dataset_id,
+                workspace_id,
                 img_dir,
                 base_url,
                 token,
@@ -153,6 +156,7 @@ def process_thread(
             result_df = upload_images(
                 dataset_name,
                 dataset_id,
+                workspace_id,
                 img_dir,
                 base_url,
                 token,

@@ -11,7 +11,7 @@ import tqdm as tq
 from requests.adapters import HTTPAdapter, Retry
 
 from .util import (geonadir_filename_trans, get_filelist_from_collection,
-                   original_filename)
+                   original_filename, add_suffix_if_needed)
 
 logger = logging.getLogger(__name__)
 env = os.environ.get("GEONADIR_CLI_ENV", "prod")
@@ -63,7 +63,7 @@ def create_dataset(payload_data, base_url, token):
     return dataset_id
 
 
-def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry, retry_interval, timeout):
+def upload_images(dataset_name, dataset_id, workspace_id, img_dir, base_url, token, max_retry, retry_interval, timeout):
     """
     Upload images from a directory to a dataset.
 
@@ -80,16 +80,21 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
     Returns:
         pd.DataFrame: DataFrame containing upload results for each image.
     """
-    file_list = os.listdir(img_dir)
-    file_list = [
-        file for file in file_list if file.lower().endswith(
-            ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif')
-        )
-    ]
+    file_dict={}
+    file_list=[]
+    for root, dirs, files in os.walk(img_dir):
+        dirs.sort()
+        files.sort()
+        for file in files:
+            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif')):
+                full_path = os.path.join(root, file)
+                unique_file_name = add_suffix_if_needed(full_path, file, file_dict) # Ensure unique file name
+                file_list.append(unique_file_name) # Add the unique file name to the list
+                file_dict[unique_file_name] = full_path # Map the unique file name to the full path
 
     url = f"{base_url}/api/uploadfiles/?page=1&project_id={dataset_id}"
     existing_image_list = [original_filename(
-        name) for name in paginate_dataset_images(url, [])]
+        name) for name in paginate_dataset_images(url, token, [])]
     existing_images = set(existing_image_list)
     file_list = [file for file in file_list if geonadir_filename_trans(
         file) not in existing_images]
@@ -98,9 +103,9 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
     df_list = []
 
     with tq.tqdm(total=len(file_list), position=0) as pbar:
-        for file_path in file_list:
-
-            file_size = os.path.getsize(os.path.join(img_dir, file_path))
+        for file_name in file_list:
+            file_path = file_dict[file_name]
+            file_size = os.path.getsize(file_path)
 
             start_time = time.time()
 
@@ -109,7 +114,8 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
                 "base_url": base_url,
                 "token": token,
                 "dataset_id": dataset_id,
-                "file_path": os.path.join(img_dir, file_path),
+                "file_name": file_name,
+                "file_path": file_path,
             }
             try:
                 response_code = upload_single_image(
@@ -122,9 +128,11 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
             upload_time = end_time - start_time
             df = pd.DataFrame(
                 {
-                    "Project ID": dataset_id,
+                    "Workspace ID": workspace_id,
+                    "Dataset ID": dataset_id,
                     "Dataset Name": dataset_name,
-                    "Image Name": file_path,
+                    "Image Path": file_path,
+                    "Image Name": file_name,
                     "Response Code": response_code,
                     "Upload Time": upload_time,
                     "Image Size": file_size
@@ -144,6 +152,7 @@ def upload_images(dataset_name, dataset_id, img_dir, base_url, token, max_retry,
 def upload_images_from_collection(
         dataset_name,
         dataset_id,
+        workspace_id,
         collection,
         base_url,
         token,
@@ -176,7 +185,7 @@ def upload_images_from_collection(
 
     url = f"{base_url}/api/uploadfiles/?page=1&project_id={dataset_id}"
     existing_image_list = [original_filename(
-        name) for name in paginate_dataset_images(url, [])]
+        name) for name in paginate_dataset_images(url, token, [])]
     existing_images = set(existing_image_list)
 
     df_list = []
@@ -221,7 +230,8 @@ def upload_images_from_collection(
             upload_time = end_time - start_time
             df = pd.DataFrame(
                 {
-                    "Project ID": dataset_id,
+                    "Workspace ID": workspace_id,
+                    "Dataset ID": dataset_id,
                     "Dataset Name": dataset_name,
                     "Image Name": file_path,
                     "Response Code": response_code,
@@ -270,7 +280,7 @@ def trigger_ortho_processing(dataset_id, base_url, token):
     response.raise_for_status()
 
 
-def paginate_dataset_images(url, image_names: list):
+def paginate_dataset_images(url, token, image_names: list):
     """
     Paginate through the dataset images API response to retrieve all image names.
 
@@ -281,9 +291,13 @@ def paginate_dataset_images(url, image_names: list):
     Returns:
         list: List of image names.
     """
+    headers = {
+        "authorization": token
+    }
     try:
-        logger.debug(f"get dataset images from {url}")
-        response = requests.get(url, timeout=60)
+        print(f"get dataset images from {url}")
+        response = requests.get(url, headers=headers, timeout=60)
+        data = response.json()
         data = response.json()
         results = data["results"]
         for result in results:
@@ -292,7 +306,7 @@ def paginate_dataset_images(url, image_names: list):
             image_names.append(image_name)
         next_page = data["next"]
         if next_page:
-            paginate_dataset_images(next_page, image_names)
+            paginate_dataset_images(next_page, token, image_names)
         return image_names
     except Exception as exc:
         if "data" in locals():
@@ -344,7 +358,7 @@ def search_datasets(search_str, base_url):
     return response.json()
 
 
-def dataset_info(project_id, base_url):
+def dataset_info(project_id, base_url, token):
     """show dataset info of given id. return 'Metadata not found' if not found.
     sample output:
     {
@@ -397,6 +411,9 @@ def dataset_info(project_id, base_url):
     """
     logger.info(f"getting GN dataset info for {project_id}")
     logger.debug(f"url: {base_url}/api/metadata/")
+    headers = {
+        "Authorization": token
+    }
     payload = {
         "project_id": project_id
     }
@@ -404,6 +421,7 @@ def dataset_info(project_id, base_url):
 
     response = requests.get(
         f"{base_url}/api/metadata/",
+        headers=headers,
         params=payload,
         timeout=180,
     )
@@ -516,11 +534,12 @@ def upload_single_image(param, max_retry=5, retry_interval=10, timeout=60):
     base_url = param["base_url"]
     token = param["token"]
     dataset_id = param["dataset_id"]
+    file_name = param["file_name"]
     file_path = param["file_path"]
 
     try:
         response_code, response_json = generate_presigned_url(
-            dataset_id, base_url, token, file_path, max_retry, retry_interval, timeout)
+            dataset_id, base_url, token, file_name, max_retry, retry_interval, timeout)
         response_code = upload_to_amazon(
             response_json, file_path, max_retry, retry_interval, timeout)
         response_code = create_post_image(response_json, dataset_id, base_url,
@@ -534,7 +553,7 @@ def generate_presigned_url(
     dataset_id,
     base_url,
     token,
-    file_path,
+    file_name,
     max_retry=5,
     retry_interval=10,
     timeout=60
@@ -570,7 +589,7 @@ def generate_presigned_url(
     json_data = {
         'dataset_id': str(dataset_id),
         'images': [
-            os.path.basename(file_path),
+            file_name,
         ],
     }
     s = requests.Session()
