@@ -86,7 +86,7 @@ def upload_images(dataset_name, dataset_id, workspace_id, img_dir, base_url, tok
         dirs.sort()
         files.sort()
         for file in files:
-            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif')):
+            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff')):
                 full_path = os.path.join(root, file)
                 unique_file_name = add_suffix_if_needed(full_path, file, file_dict) # Ensure unique file name
                 file_list.append(unique_file_name) # Add the unique file name to the list
