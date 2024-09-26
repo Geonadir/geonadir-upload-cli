@@ -56,4 +56,4 @@ version_scheme = "guess-next-dev"
 
 
 # version_scheme = "guess-next-semver"
-# local_scheme = "get-local-empty"%
+# local_scheme = "no-local-version"
