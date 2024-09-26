@@ -6,7 +6,7 @@ This package is for uploading datasets to Geonadir. You can use it to upload mul
 
 ## Setup
 
-After cloning this repo, run the commands below to install this package.
+After cloning this repo, run the commands below to install this package. If there is any update, reclone the dir and run the same commands below.
 
 ```bash
 # create a virtual env before installing if you prefer
@@ -94,6 +94,8 @@ Options:
 `... -i dataset1 path1 -i dataset2 path2 ...`
 
   - All path(s) must exist, otherwise error raised.
+  
+  - If there are multiple subfolders in one path, all images will be merged and upload to the same dataset, duplicated file name will be automatically concated with suffix `*_Copy_1*`,  `*_Copy_2*`, etc
 
   - Dataset name is processed as follows:
 
