@@ -41,4 +41,5 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/
-        package-name: geonadir-upload-cli-test
+        package-dir: geonadir-upload-cli-test
+        verbose: true
