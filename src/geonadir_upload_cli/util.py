@@ -291,3 +291,31 @@ def clickable_link(text: str):
 
     text = re.sub(regexp, repl, text)
     return text
+
+def add_suffix_if_needed(file_path, file_name, file_dict):
+    """
+    Adds a suffix to the filename if it already exists in file_dict, considering its full path.
+
+    Args:
+        file_path (str): The full file path.
+        file_name (str): The original file name.
+        file_dict (dict): Dictionary that stores unique file names and their full paths.
+
+    Returns:
+        str: A unique file name with a suffix if needed.
+    """
+    # Split the filename into name and extension
+    name, extension = os.path.splitext(file_name)
+    suffix_count = 1
+
+    # If the combination of file name and path is not unique, add a suffix
+    unique_file_name = file_name
+    while unique_file_name in file_dict:
+        # Check if the file path matches; if so, return the existing name
+        if file_dict[unique_file_name] == file_path:
+            return unique_file_name  # No need to add another suffix
+        # If there's a conflict with a different path, add a suffix
+        unique_file_name = f"{name}_Copy_{suffix_count}{extension}"
+        suffix_count += 1
+
+    return unique_file_name
